@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار المهارات الرقمية - الصف السابع | مدرسة العقبة الرقمية</title>
+
+    <!-- خطوط Google العربية (Cairo & Tajawal) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <!-- مكتبة Tailwind CSS للتصميم المتجاوب -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- مكتبة Three.js للخلفية ثلاثية الأبعاد -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- مكتبة Canvas Confetti للاحتفال بالنتائج -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- أيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        tajawal: ['Tajawal', 'sans-serif'],
+                    },
+                    colors: {
+                        beigeScreen: '#FAF6EE',
+                        beigeFrame: '#E8DFCE',
+                        beigeBorder: '#D4C5AC',
+                        aqabaBlue: '#0284C7',
+                        aqabaDeep: '#0369A1',
+                        inkDark: '#1E293B',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* خلفية زرقاء سماوية مشرقة */
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #dbeafe 0%, #bae6fd 50%, #7dd3fc 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #1E293B;
+            user-select: none;
+        }
+
+        /* إشراقة شمس ذهبية دافئة في الزاوية */
+        .sun-glow {
+            position: fixed;
+            top: -130px;
+            left: -130px;
+            width: 460px;
+            height: 460px;
+            background: radial-gradient(circle, rgba(254, 240, 138, 0.96) 0%, rgba(253, 224, 71, 0.58) 38%, rgba(251, 191, 36, 0.16) 66%, transparent 78%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            animation: pulseSun 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseSun {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* كانفاس Three.js في الخلفية */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* مشهد المجسم ثلاثي الأبعاد للحاسوب */
+        .computer-stage {
+            perspective: 1650px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .computer-3d-wrapper {
+            transform-style: preserve-3d;
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
+        }
+
+        /* هيكل شاشة الحاسوب البيج الدافئة */
+        .monitor-chassis {
+            background: linear-gradient(145deg, #F3ECE0 0%, #DFD3BC 100%);
+            border: 4px solid #CBBBA0;
+            border-radius: 28px;
+            box-shadow:
+                0 25px 50px -12px rgba(3, 105, 161, 0.32),
+                0 12px 24px -8px rgba(0, 0, 0, 0.15),
+                inset 0 3px 6px rgba(255, 255, 255, 0.85),
+                inset 0 -6px 12px rgba(168, 150, 122, 0.42);
+            position: relative;
+        }
+
+        .monitor-bezel {
+            background: #2C2925;
+            border-radius: 20px;
+            padding: 10px;
+            box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.55);
+        }
+
+        /* شاشة العرض الداخلية البيج الهادئة */
+        .monitor-screen {
+            background: radial-gradient(circle at top right, #FDFBF7 0%, #FAF6EE 55%, #F4EDE0 100%);
+            border-radius: 14px;
+            min-height: 550px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 24px rgba(180, 160, 130, 0.18);
+        }
+
+        /* عنق وقاعدة الحاسوب ثلاثية الأبعاد */
+        .monitor-neck {
+            width: 112px;
+            height: 44px;
+            margin: 0 auto;
+            background: linear-gradient(90deg, #CBBBA0 0%, #EAE0CE 50%, #C2B093 100%);
+            box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.18);
+            position: relative;
+            z-index: 5;
+        }
+
+        .monitor-base {
+            width: 265px;
+            height: 22px;
+            margin: -2px auto 0;
+            background: linear-gradient(180deg, #EFE7D6 0%, #CBBBA0 100%);
+            border-radius: 50% 50% 14px 14px / 10px 10px 12px 12px;
+            box-shadow: 0 14px 25px rgba(3, 105, 161, 0.32), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+            border-bottom: 4px solid #B09E80;
+        }
+
+        /* أزرار ثلاثية الأبعاد */
+        .btn-3d {
+            transition: all 0.15s ease;
+            box-shadow: 0 5px 0 #0369A1, 0 8px 15px rgba(3, 105, 161, 0.25);
+        }
+        .btn-3d:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 0 #0369A1, 0 12px 20px rgba(3, 105, 161, 0.3);
+        }
+        .btn-3d:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #0369A1, 0 4px 8px rgba(3, 105, 161, 0.2);
+        }
+
+        /* بطاقات الخيارات المحايدة (بدون إظهار صح أو خطأ أثناء الحل) */
+        .option-card {
+            background-color: #FFFFFF;
+            border: 2px solid #E2D7C3;
+            transition: all 0.18s ease;
+            box-shadow: 0 3px 0 #DFD3BC;
+        }
+        .option-card:hover {
+            border-color: #0284C7;
+            background-color: #F0F9FF;
+            transform: translateX(-3px);
+            box-shadow: 0 4px 0 #0284C7;
+        }
+        .option-card.is-selected {
+            background-color: #E0F2FE !important;
+            border-color: #0284C7 !important;
+            box-shadow: 0 4px 0 #0369A1 !important;
+        }
+        .option-card.is-selected .option-letter {
+            background-color: #0284C7 !important;
+            color: #FFFFFF !important;
+            border-color: #0284C7 !important;
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #F5F0E6;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #CBBBA0;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-between py-4 px-3 sm:px-6">
+
+    <!-- إشراقة الشمس الذهبية -->
+    <div class="sun-glow"></div>
+
+    <!-- خلفية Three.js ثلاثية الأبعاد -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- الشريط العلوي -->
+    <header class="w-full max-w-5xl flex flex-wrap items-center justify-between gap-2 mb-3 z-20">
+        <div class="flex items-center gap-2.5 bg-white/85 backdrop-blur-md px-4 py-2 rounded-2xl shadow-sm border border-sky-200">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-white shadow">
+                <i class="fa-solid fa-laptop-code text-sm"></i>
+            </div>
+            <div>
+                <span class="block text-[11px] font-bold text-sky-700">الصف السابع • الفصل الدراسي الأول</span>
+                <span class="block text-sm font-extrabold text-slate-800">مدرسة العقبة الرقمية</span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <!-- زر الصوت الهادئ -->
+            <button id="sound-toggle-btn" onclick="toggleSound()" class="flex items-center justify-center w-10 h-10 bg-white/90 hover:bg-white text-sky-700 rounded-xl border border-sky-200 shadow-sm transition cursor-pointer" title="تفعيل أو كتم الصوت الهادئ">
+                <i id="sound-icon" class="fa-solid fa-volume-high"></i>
+            </button>
+
+            <!-- زر إعدادات الربط مع Google Sheets -->
+            <button onclick="openTeacherSettings()" class="flex items-center gap-1.5 bg-white/90 hover:bg-sky-50 text-slate-700 font-bold text-xs sm:text-sm px-3.5 py-2 rounded-xl border border-sky-200 shadow-sm transition cursor-pointer" title="إعدادات ربط Google Sheets">
+                <i class="fa-solid fa-gear text-sky-600"></i>
+                <span>إعدادات الربط</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- مجسم الحاسوب ثلاثي الأبعاد -->
+    <main class="computer-stage w-full max-w-4xl my-auto">
+        <div id="computer-3d" class="computer-3d-wrapper">
+            <div class="monitor-chassis p-3 sm:p-5">
+
+                <!-- شريط علوي على إطار الشاشة -->
+                <div class="flex items-center justify-between px-3 pb-2.5 text-xs font-bold text-stone-600">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                        <span>مدرسة العقبة الرقمية</span>
+                    </div>
+                    <div class="w-3.5 h-3.5 rounded-full bg-stone-800 border border-stone-400"></div>
+                    <div class="flex items-center gap-1 text-sky-800">
+                        <i class="fa-solid fa-desktop"></i>
+                        <span>40 سؤالاً</span>
+                    </div>
+                </div>
+
+                <!-- الحافة الداخلية الداكنة -->
+                <div class="monitor-bezel">
+
+                    <!-- شاشة العرض البيج الهادئة -->
+                    <div class="monitor-screen flex flex-col justify-between p-4 sm:p-7 custom-scroll">
+
+                        <!-- ==================== 1. شاشة البداية ==================== -->
+                        <section id="welcome-screen" class="flex flex-col items-center justify-between h-full text-center space-y-4 my-auto">
+
+                            <!-- الترويسة المطلوبة داخل الشاشة -->
+                            <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#F2EBD9] border border-[#DFD3BC] rounded-2xl p-3.5 shadow-sm">
+                                <div class="flex items-center gap-3 text-right">
+                                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-600 to-cyan-500 text-white flex items-center justify-center text-xl shadow-md shrink-0">
+                                        <i class="fa-solid fa-graduation-cap"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="text-base sm:text-lg font-black text-sky-950">مدرسة العقبة الرقمية</h2>
+                                        <span class="block text-xs sm:text-sm font-extrabold text-sky-800">مادة المهارات الرقمية</span>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white px-4 py-2 rounded-xl border border-[#DFD3BC] shadow-sm text-center sm:text-left">
+                                    <span class="block text-sm font-black text-slate-800">المعلمة إيمان زيدان</span>
+                                </div>
+                            </div>
+
+                            <!-- العنوان والرسالة الترحيبية -->
+                            <div class="space-y-2 max-w-2xl">
+                                <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-sky-600/10 text-sky-900 font-extrabold text-xs sm:text-sm border border-sky-600/20">
+                                    <span>اختبار نهاية الفصل</span>
+                                    <span>•</span>
+                                    <span>40 سؤالاً</span>
+                                </div>
+                                <h1 class="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
+                                    اختبار نهاية الفصل — 40 سؤالاً
+                                </h1>
+                                <p class="text-sm sm:text-base text-slate-700 font-semibold leading-relaxed bg-white/80 p-3.5 rounded-2xl border border-[#E5DAC6]">
+                                    أهلاً بكِ / بكَ في اختبار مادة المهارات الرقمية للصف السابع (الفصل الدراسي الأول). خذ وقتك بهدوء واختر الإجابة الأنسب لكل سؤال، وستظهر نتيجتك وتُرسل تلقائياً بعد إنهاء جميع الأسئلة الأربعين.
+                                </p>
+                            </div>
+
+                            <!-- نموذج تسجيل الطالب -->
+                            <div class="w-full max-w-xl bg-white/95 border-2 border-[#DFD3BC] rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-right">
+                                    <div class="sm:col-span-2">
+                                        <label for="student-name" class="block text-xs font-extrabold text-slate-700 mb-1.5">
+                                            <i class="fa-solid fa-user text-sky-600 ml-1"></i>
+                                            اسم الطالب <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" id="student-name" placeholder="اكتب اسم الطالب"
+                                            class="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF6EE] border-2 border-[#D4C5AC] focus:border-sky-500 focus:bg-white outline-none text-sm font-bold text-slate-800 transition">
+                                    </div>
+
+                                    <div>
+                                        <label for="student-section" class="block text-xs font-extrabold text-slate-700 mb-1.5">
+                                            <i class="fa-solid fa-users text-sky-600 ml-1"></i>
+                                            الشعبة <span class="text-red-500">*</span>
+                                        </label>
+                                        <select id="student-section"
+                                            class="w-full px-3 py-2.5 rounded-xl bg-[#FAF6EE] border-2 border-[#D4C5AC] focus:border-sky-500 focus:bg-white outline-none text-sm font-bold text-slate-800 transition cursor-pointer">
+                                            <option value="">اختر الشعبة...</option>
+                                            <option value="السابع (أ)">السابع (أ)</option>
+                                            <option value="السابع (ب)">السابع (ب)</option>
+                                            <option value="السابع (ج)">السابع (ج)</option>
+                                            <option value="السابع (د)">السابع (د)</option>
+                                            <option value="السابع (هـ)">السابع (هـ)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div id="form-error" class="hidden text-xs font-bold text-red-700 bg-red-50 border border-red-200 py-2 px-3 rounded-xl flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-circle-exclamation"></i>
+                                    <span>يرجى إدخال اسم الطالب واختيار الشعبة أولاً لبدء الاختبار.</span>
+                                </div>
+
+                                <button onclick="startQuiz()" class="btn-3d w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white font-black text-base sm:text-lg flex items-center justify-center gap-2.5 cursor-pointer">
+                                    <span>بدء الاختبار</span>
+                                    <i class="fa-solid fa-arrow-left"></i>
+                                </button>
+                            </div>
+
+                            <div class="w-full flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-stone-600">
+                                <span>الوحدة الأولى: أنظمة الحوسبة</span>
+                                <span>•</span>
+                                <span>الوحدة الثانية: شبكات الحاسوب</span>
+                                <span>•</span>
+                                <span>40 سؤال اختيار من متعدد</span>
+                            </div>
+                        </section>
+
+                        <!-- ==================== 2. شاشة الأسئلة المتسلسلة ==================== -->
+                        <section id="quiz-screen" class="hidden flex-col justify-between h-full space-y-4">
+
+                            <!-- شريط التقدم والبيانات -->
+                            <div class="space-y-2.5">
+                                <div class="flex flex-wrap items-center justify-between gap-2 bg-[#F2EBD9] px-4 py-2.5 rounded-2xl border border-[#DFD3BC]">
+                                    <div class="flex items-center gap-2">
+                                        <span class="bg-sky-600 text-white text-xs font-black px-3 py-1 rounded-xl shadow-sm">
+                                            السؤال <span id="q-number">1</span> من 40
+                                        </span>
+                                        <span id="q-unit-badge" class="text-xs font-bold text-stone-700 bg-white px-2.5 py-1 rounded-lg border border-[#DFD3BC]">
+                                            الوحدة الأولى: أنظمة الحوسبة
+                                        </span>
+                                    </div>
+
+                                    <div class="flex items-center gap-2.5 text-xs font-bold">
+                                        <span id="display-student-info" class="hidden sm:inline text-slate-700 bg-white/85 px-2.5 py-1 rounded-lg border border-[#DFD3BC]"></span>
+                                        <div class="flex items-center gap-1.5 bg-white text-slate-800 px-3 py-1 rounded-xl border border-[#DFD3BC]">
+                                            <i class="fa-regular fa-clock text-sky-600"></i>
+                                            <span id="timer-display" class="font-mono font-extrabold">00:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="w-full h-2.5 bg-[#E6DEC8] rounded-full overflow-hidden border border-[#D4C5AC]">
+                                    <div id="progress-bar" class="h-full bg-gradient-to-l from-sky-500 to-blue-600 rounded-full transition-all duration-300" style="width: 2.5%;"></div>
+                                </div>
+                            </div>
+
+                            <!-- السؤال والخيارات بدون إظهار نتيجة صح أو خطأ أثناء الحل -->
+                            <div class="my-auto space-y-4 py-1">
+                                <div class="bg-white border-2 border-[#DFD3BC] rounded-2xl p-4 sm:p-5 shadow-sm">
+                                    <h3 id="question-text" class="text-base sm:text-xl font-extrabold text-slate-900 leading-relaxed">
+                                        جاري تحميل السؤال...
+                                    </h3>
+                                </div>
+
+                                <div id="options-container" class="grid grid-cols-1 gap-2.5 sm:gap-3"></div>
+                            </div>
+
+                            <!-- شريط التنقل السفلي -->
+                            <div class="flex items-center justify-between pt-2 border-t border-[#E2D7C3]">
+                                <div class="flex items-center gap-2">
+                                    <button id="prev-btn" onclick="prevQuestion()" disabled
+                                        class="px-4 py-2.5 rounded-xl bg-white hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-[#D4C5AC] font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition cursor-pointer">
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                        <span>السابق</span>
+                                    </button>
+                                    <span class="hidden sm:inline text-xs font-bold text-stone-600">المعلمة إيمان زيدان</span>
+                                </div>
+
+                                <button id="next-btn" onclick="nextQuestion()" disabled
+                                    class="btn-3d px-6 py-2.5 rounded-xl bg-sky-600 disabled:bg-stone-300 disabled:shadow-none disabled:cursor-not-allowed text-white font-extrabold text-sm sm:text-base flex items-center gap-2 cursor-pointer">
+                                    <span id="next-btn-text">التالي</span>
+                                    <i class="fa-solid fa-arrow-left"></i>
+                                </button>
+                            </div>
+                        </section>
+
+                        <!-- ==================== 3. شاشة النتيجة النهائية ==================== -->
+                        <section id="result-screen" class="hidden flex-col items-center justify-between h-full text-center space-y-4 my-auto">
+
+                            <div class="w-full bg-gradient-to-r from-[#F2EBD9] via-white to-[#F2EBD9] border-2 border-[#DFD3BC] rounded-2xl p-4 shadow-sm">
+                                <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                                    <div class="flex items-center gap-3 text-right">
+                                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-700 text-white flex items-center justify-center text-2xl shadow-md shrink-0">
+                                            <i class="fa-solid fa-award"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-xs font-extrabold text-sky-800 bg-sky-100 px-2.5 py-0.5 rounded-full">نتيجة اختبار نهاية الفصل</span>
+                                            <h2 id="result-student-name" class="text-lg sm:text-xl font-black text-slate-900 mt-1">اسم الطالب</h2>
+                                            <p id="result-student-section" class="text-xs font-bold text-slate-600">الشعبة: السابع</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-3 bg-[#FAF6EE] px-4 py-2.5 rounded-2xl border-2 border-[#DFD3BC]">
+                                        <div class="text-center">
+                                            <span class="block text-[11px] font-bold text-stone-500">النتيجة</span>
+                                            <span class="text-2xl sm:text-3xl font-black text-sky-700"><span id="final-score">0</span><span class="text-base text-stone-400">/40</span></span>
+                                        </div>
+                                        <div class="h-8 w-0.5 bg-[#DFD3BC]"></div>
+                                        <div class="text-center">
+                                            <span class="block text-[11px] font-bold text-stone-500">النسبة المئوية</span>
+                                            <span id="final-percentage" class="text-2xl sm:text-3xl font-black text-emerald-700">0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 text-right">
+                                <div class="bg-white border border-[#DFD3BC] rounded-2xl p-4 flex flex-col justify-center">
+                                    <span id="grade-badge" class="inline-block w-fit text-xs font-black px-3 py-1 rounded-full bg-sky-100 text-sky-800 mb-1.5">التقدير</span>
+                                    <p id="encouragement-msg" class="text-sm font-bold text-slate-700 leading-relaxed">
+                                        بارك الله في جهودك وأتممت الاختبار بنجاح.
+                                    </p>
+                                </div>
+
+                                <div class="bg-[#F2EBD9] border border-[#D4C5AC] rounded-2xl p-4 flex flex-col justify-center">
+                                    <div class="text-sm font-black text-slate-900">مدرسة العقبة الرقمية</div>
+                                    <div class="text-xs font-extrabold text-sky-800 mt-0.5">مادة المهارات الرقمية • الصف السابع</div>
+                                    <div class="text-xs font-bold text-stone-700 mt-1">المعلمة إيمان زيدان</div>
+                                </div>
+                            </div>
+
+                            <!-- حالة إرسال النتيجة إلى Google Sheets -->
+                            <div id="sheets-status-box" class="w-full rounded-2xl p-3.5 border text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 bg-sky-50 border-sky-200 text-sky-800">
+                                <i id="sheets-status-icon" class="fa-solid fa-spinner fa-spin text-base"></i>
+                                <span id="sheets-status-text">جاري إرسال النتيجة تلقائياً إلى جدول Google Sheets...</span>
+                            </div>
+
+                            <!-- أزرار المراجعة وإعادة الاختبار -->
+                            <div class="w-full flex flex-wrap items-center justify-center gap-3 pt-1">
+                                <button onclick="retrySheetsSend()" id="retry-send-btn" class="hidden px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow cursor-pointer">
+                                    <i class="fa-solid fa-rotate"></i>
+                                    <span>إعادة إرسال النتيجة</span>
+                                </button>
+                                <button onclick="openReviewScreen()" class="px-5 py-2.5 rounded-xl bg-white hover:bg-stone-50 text-slate-800 border-2 border-[#D4C5AC] font-extrabold text-xs sm:text-sm flex items-center gap-2 transition cursor-pointer">
+                                    <i class="fa-solid fa-clipboard-list text-sky-600"></i>
+                                    <span>مراجعة الأسئلة والإجابات (40)</span>
+                                </button>
+                                <button onclick="location.reload()" class="btn-3d px-6 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-xs sm:text-sm flex items-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-arrow-rotate-right"></i>
+                                    <span>اختبار جديد</span>
+                                </button>
+                            </div>
+                        </section>
+
+                        <!-- ==================== 4. شاشة المراجعة الكاملة في النهاية ==================== -->
+                        <section id="review-screen" class="hidden flex-col justify-between h-full space-y-3">
+                            <div class="flex flex-wrap items-center justify-between gap-2 bg-[#F2EBD9] px-4 py-2.5 rounded-2xl border border-[#DFD3BC]">
+                                <h3 class="text-sm sm:text-base font-black text-slate-800">
+                                    <i class="fa-solid fa-clipboard-check text-sky-600 ml-1.5"></i>
+                                    المراجعة الكاملة للأسئلة والإجابات
+                                </h3>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="renderReviewList('all')" id="filter-all" class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-sky-600 text-white cursor-pointer">الكل (40)</button>
+                                    <button onclick="renderReviewList('wrong')" id="filter-wrong" class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-white text-slate-700 border border-[#D4C5AC] cursor-pointer">الأخطاء فقط</button>
+                                    <button onclick="backToResult()" class="text-xs font-extrabold bg-white px-3 py-1 rounded-lg border border-[#D4C5AC] hover:bg-sky-50 text-sky-700 cursor-pointer">العودة للنتيجة</button>
+                                </div>
+                            </div>
+                            <div id="review-list" class="flex-1 overflow-y-auto max-h-[375px] space-y-2.5 pr-1 custom-scroll text-right"></div>
+                        </section>
+
+                    </div>
+                </div>
+
+                <!-- شريط سفلي على إطار الشاشة -->
+                <div class="flex items-center justify-between px-4 pt-3">
+                    <div class="flex items-center gap-2 text-[11px] font-bold text-stone-600">
+                        <span>مدرسة العقبة الرقمية • المعلمة إيمان زيدان</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-stone-400/60 border border-stone-500/40"></span>
+                        <span class="w-3 h-3 rounded-full bg-stone-400/60 border border-stone-500/40"></span>
+                        <span class="w-3.5 h-3.5 rounded-full bg-sky-500/80 border border-sky-700"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="monitor-neck"></div>
+            <div class="monitor-base"></div>
+        </div>
+    </main>
+
+    <!-- تذييل الصفحة -->
+    <footer class="mt-4 text-center text-xs font-bold text-sky-950/80 z-10">
+        مدرسة العقبة الرقمية • مادة المهارات الرقمية للصف السابع • المعلمة إيمان زيدان
+    </footer>
+
+    <!-- ==================== نافذة إعدادات الربط مع Google Sheets ==================== -->
+    <div id="settings-modal" class="fixed inset-0 bg-slate-900/55 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-[#FAF6EE] border-2 border-[#D4C5AC] rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 text-right">
+            <div class="flex items-center justify-between border-b border-[#DFD3BC] pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-table"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-slate-900 text-base">إعدادات الربط مع Google Sheets</h3>
+                        <span class="text-xs font-bold text-stone-600">المعلمة إيمان زيدان • مدرسة العقبة الرقمية</span>
+                    </div>
+                </div>
+                <button onclick="closeTeacherSettings()" class="w-8 h-8 rounded-full bg-stone-200 hover:bg-stone-300 text-slate-700 flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs sm:text-sm">
+                <p class="text-slate-700 font-semibold leading-relaxed">
+                    رابط <strong>Google Apps Script</strong> المرتبط بالاختبار لإرسال النتائج تلقائياً (التاريخ، الوقت، الاسم، الشعبة، النتيجة، النسبة المئوية، التفاصيل):
+                </p>
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-800 mb-1">رابط نشر السكربت (Web App URL):</label>
+                    <input type="url" id="script-url-input" dir="ltr" placeholder="https://script.google.com/macros/s/...../exec"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-white border-2 border-[#D4C5AC] focus:border-sky-500 outline-none text-xs font-mono text-slate-800">
+                </div>
+                <div id="settings-feedback" class="hidden text-xs font-bold p-2.5 rounded-xl"></div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#DFD3BC]">
+                <button onclick="testSheetsConnection()" class="px-4 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold text-xs border border-amber-300 cursor-pointer">
+                    <i class="fa-solid fa-paper-plane ml-1"></i> اختبار إرسال تجريبي
+                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="closeTeacherSettings()" class="px-4 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-slate-800 font-bold text-xs cursor-pointer">إغلاق</button>
+                    <button onclick="saveTeacherSettings()" class="btn-3d px-5 py-2 rounded-xl bg-sky-600 text-white font-extrabold text-xs cursor-pointer">حفظ الرابط</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * رابط Google Apps Script الافتراضي المحدد
+         */
+        const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTtZfzNA6LqHS916oXhLo9eQgbQrqLmTFKXpP8-ddprxS5RYNlKqxe359VLTgCZS7AZg/exec";
+        let GOOGLE_SCRIPT_URL = localStorage.getItem('aqaba_digit_script_url') || DEFAULT_SCRIPT_URL;
+
+        /**
+         * بنك الأسئلة الشامل (40 سؤالاً) - مهارات رقمية للصف السابع (الفصل الدراسي الأول)
+         */
+        const QUESTION_BANK = [
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "ما هو المقصود بنظام الحوسبة؟",
+                options: [
+                    "مجموعة متكاملة من المكونات المادية والبرمجيات والبيانات والمستخدمين التي تعمل معاً لمعالجة المعلومات",
+                    "شاشة العرض فقط دون أي برمجيات أو معالجة للبيانات",
+                    "لوحة المفاتيح والفأرة فقط دون وحدة معالجة",
+                    "برنامج تصفح الإنترنت وحده"
+                ],
+                answer: "مجموعة متكاملة من المكونات المادية والبرمجيات والبيانات والمستخدمين التي تعمل معاً لمعالجة المعلومات"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "أي من التالي يُعد من وحدات الإدخال؟",
+                options: [
+                    "الماسح الضوئي",
+                    "الطابعة",
+                    "السماعات",
+                    "الشاشة"
+                ],
+                answer: "الماسح الضوئي"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "أي من التالي يُعد من وحدات الإخراج؟",
+                options: [
+                    "الطابعة",
+                    "الفأرة",
+                    "لوحة المفاتيح",
+                    "الميكروفون"
+                ],
+                answer: "الطابعة"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "ما وظيفة وحدة المعالجة المركزية (CPU)؟",
+                options: [
+                    "تنفيذ التعليمات ومعالجة البيانات وإدارة العمليات الحسابية والمنطقية",
+                    "تخزين الملفات بشكل دائم بعد إطفاء الجهاز",
+                    "عرض الصور على الشاشة مباشرة دون معالجة",
+                    "إرسال البريد الإلكتروني فقط"
+                ],
+                answer: "تنفيذ التعليمات ومعالجة البيانات وإدارة العمليات الحسابية والمنطقية"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "ما الذي يميز ذاكرة الوصول العشوائي (RAM)؟",
+                options: [
+                    "ذاكرة مؤقتة تفقد بياناتها عند انقطاع التيار الكهربائي وتوفر وصولاً سريعاً للبيانات قيد الاستخدام",
+                    "ذاكرة قراءة فقط لا يمكن تعديلها أبداً",
+                    "وسيط تخزين خارجي سحابي",
+                    "وحدة إدخال صوتية"
+                ],
+                answer: "ذاكرة مؤقتة تفقد بياناتها عند انقطاع التيار الكهربائي وتوفر وصولاً سريعاً للبيانات قيد الاستخدام"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "ما الفرق الأساسي بين البرمجيات والعتاد (المكونات المادية)؟",
+                options: [
+                    "العتاد أجزاء ملموسة بينما البرمجيات تعليمات وبرامج تشغّل العتاد وتوجّهه",
+                    "البرمجيات أجزاء مادية والعتاد ملفات نصية",
+                    "لا يوجد أي فرق بينهما",
+                    "العتاد يعمل فقط بدون كهرباء"
+                ],
+                answer: "العتاد أجزاء ملموسة بينما البرمجيات تعليمات وبرامج تشغّل العتاد وتوجّهه"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "ما دور نظام التشغيل في جهاز الحاسوب؟",
+                options: [
+                    "إدارة موارد الجهاز وتشغيل البرامج وتوفير واجهة للتفاعل بين المستخدم والحاسوب",
+                    "تصميم المواقع الإلكترونية فقط",
+                    "تنظيف عدسة الكاميرا",
+                    "قياس درجة حرارة الغرفة"
+                ],
+                answer: "إدارة موارد الجهاز وتشغيل البرامج وتوفير واجهة للتفاعل بين المستخدم والحاسوب"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "أي مما يلي يُصنّف ضمن برمجيات التطبيقات؟",
+                options: [
+                    "برامج معالجة النصوص والعروض التقديمية",
+                    "اللوحة الأم",
+                    "المعالج الدقيق",
+                    "كابل الطاقة"
+                ],
+                answer: "برامج معالجة النصوص والعروض التقديمية"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "ما أصغر وحدة قياس لتمثيل البيانات الرقمية في الحاسوب؟",
+                options: [
+                    "البت (Bit)",
+                    "الجيجابايت (GB)",
+                    "التيرابايت (TB)",
+                    "الميجابايت (MB)"
+                ],
+                answer: "البت (Bit)"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "كم بت (Bit) يساوي البايت (Byte) الواحد عادةً؟",
+                options: [
+                    "8 بتات",
+                    "2 بت",
+                    "100 بت",
+                    "1000 بت"
+                ],
+                answer: "8 بتات"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "أي من وحدات القياس التالية أكبر سعة؟",
+                options: [
+                    "تيرابايت (TB)",
+                    "كيلوبايت (KB)",
+                    "ميجابايت (MB)",
+                    "بايت (Byte)"
+                ],
+                answer: "تيرابايت (TB)"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "ما المقصود بالتخزين الثانوي (الدائم)؟",
+                options: [
+                    "الاحتفاظ بالبيانات والبرامج حتى بعد إيقاف تشغيل الحاسوب مثل الأقراص الصلبة",
+                    "حذف الملفات تلقائياً كل دقيقة",
+                    "تسجيل الصوت لحظياً دون حفظ",
+                    "زيادة سطوع الشاشة"
+                ],
+                answer: "الاحتفاظ بالبيانات والبرامج حتى بعد إيقاف تشغيل الحاسوب مثل الأقراص الصلبة"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "أي من الأجهزة التالية يُعد وسيلة تخزين؟",
+                options: [
+                    "قرص الحالة الصلبة (SSD) أو ذاكرة الفلاش (USB)",
+                    "لوحة المفاتيح",
+                    "الفأرة الضوئية",
+                    "السماعة الخارجية"
+                ],
+                answer: "قرص الحالة الصلبة (SSD) أو ذاكرة الفلاش (USB)"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "لماذا يُنصح بعمل نسخة احتياطية منتظمة للبيانات؟",
+                options: [
+                    "لحماية البيانات من الفقدان أو التلف أو الأعطال التقنية",
+                    "لتقليل سرعة المعالج",
+                    "لزيادة استهلاك البطارية",
+                    "لمنع فتح المتصفح"
+                ],
+                answer: "لحماية البيانات من الفقدان أو التلف أو الأعطال التقنية"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "ما الفائدة الأساسية من استخدام مجلدات منظمة لتسمية وحفظ الملفات؟",
+                options: [
+                    "تسهيل الوصول إلى الملفات وتنظيمها وتجنب تكرارها أو ضياعها",
+                    "تعطيل صلاحيات القراءة",
+                    "زيادة حجم الملفات أضعافاً مضاعفة",
+                    "إغلاق نظام التشغيل"
+                ],
+                answer: "تسهيل الوصول إلى الملفات وتنظيمها وتجنب تكرارها أو ضياعها"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "أي من الممارسات التالية يُعد من قواعد الاستخدام الآمن لأجهزة الحاسوب؟",
+                options: [
+                    "تجنب السوائل قرب الأجهزة والجلوس بوضعية مريحة والحفاظ على تهوية الجهاز",
+                    "تغطية فتحات التهوية أثناء التشغيل الطويل",
+                    "سحب الأسلاك بعنف من المنافذ",
+                    "تجاهل تحديثات الأمان دون سبب"
+                ],
+                answer: "تجنب السوائل قرب الأجهزة والجلوس بوضعية مريحة والحفاظ على تهوية الجهاز"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "ما المقصود بالبرمجيات الخبيثة؟",
+                options: [
+                    "برامج ضارة تُصمّم لإلحاق الضرر بالأنظمة أو سرقة البيانات أو تعطيل الخدمات",
+                    "برامج لتنسيق النصوص وإنشاء الجداول",
+                    "أدوات لضبط دقة الشاشة",
+                    "ملفات صوتية تعليمية"
+                ],
+                answer: "برامج ضارة تُصمّم لإلحاق الضرر بالأنظمة أو سرقة البيانات أو تعطيل الخدمات"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "ما صفة كلمة المرور القوية؟",
+                options: [
+                    "طويلة وتجمع بين الأحرف الكبيرة والصغيرة والأرقام والرموز ولا تعتمد على معلومات شخصية سهلة التخمين",
+                    "اسم الطالب متبوعاً بسنة الميلاد فقط",
+                    "كلمة 123456",
+                    "مشاركة نفس الكلمة البسيطة مع الجميع"
+                ],
+                answer: "طويلة وتجمع بين الأحرف الكبيرة والصغيرة والأرقام والرموز ولا تعتمد على معلومات شخصية سهلة التخمين"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "ما دور برنامج مكافحة الفيروسات؟",
+                options: [
+                    "فحص الملفات والأنظمة واكتشاف البرمجيات الضارة ومنعها أو إزالتها",
+                    "تصميم الشعارات ثلاثية الأبعاد",
+                    "زيادة عدد المنافذ الفيزيائية في الجهاز",
+                    "ترجمة اللغات الحية"
+                ],
+                answer: "فحص الملفات والأنظمة واكتشاف البرمجيات الضارة ومنعها أو إزالتها"
+            },
+            {
+                unit: "الوحدة الأولى: أنظمة الحوسبة",
+                q: "ما المقصود بالهوية الرقمية؟",
+                options: [
+                    "مجموع المعلومات والآثار والأنشطة التي يتركها الشخص عبر الإنترنت",
+                    "بطاقة الهوية الورقية فقط",
+                    "سلك التوصيل الكهربائي",
+                    "لوحة المفاتيح الافتراضية"
+                ],
+                answer: "مجموع المعلومات والآثار والأنشطة التي يتركها الشخص عبر الإنترنت"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما المقصود بشبكة الحاسوب؟",
+                options: [
+                    "ربط جهازين أو أكثر معاً لتبادل البيانات والموارد مثل الملفات والطابعات والاتصال بالإنترنت",
+                    "استخدام حاسوب واحد غير متصل بأي جهاز آخر",
+                    "طباعة وثيقة على ورق فقط",
+                    "إطفاء الشاشة لتوفير الطاقة"
+                ],
+                answer: "ربط جهازين أو أكثر معاً لتبادل البيانات والموارد مثل الملفات والطابعات والاتصال بالإنترنت"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما المقصود بالشبكة المحلية (LAN)؟",
+                options: [
+                    "شبكة تغطي نطاقاً جغرافياً محدوداً كالمنزل أو المختبر المدرسي أو المكتب",
+                    "شبكة تمتد عبر القارات والدول كافة",
+                    "خدمة تخزين صوتي فقط",
+                    "نوع من أنواع الفأرة"
+                ],
+                answer: "شبكة تغطي نطاقاً جغرافياً محدوداً كالمنزل أو المختبر المدرسي أو المكتب"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما المقصود بالشبكة الواسعة (WAN)؟",
+                options: [
+                    "شبكة تربط شبكات أصغر عبر مسافات جغرافية واسعة كالمدن والدول، وأشهر مثال عليها الإنترنت",
+                    "كابل يربط الفأرة بالحاسوب فقط",
+                    "ذاكرة داخل المعالج",
+                    "شاشة عرض صغيرة"
+                ],
+                answer: "شبكة تربط شبكات أصغر عبر مسافات جغرافية واسعة كالمدن والدول، وأشهر مثال عليها الإنترنت"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما وظيفة الموجّه (Router) في الشبكات المنزلية والمدرسية؟",
+                options: [
+                    "ربط الشبكة المحلية بالإنترنت وتوجيه حزم البيانات بين الشبكات المختلفة",
+                    "طباعة المستندات الورقية",
+                    "تسجيل المقاطع المرئية",
+                    "تخزين الطاقة الكهربائية"
+                ],
+                answer: "ربط الشبكة المحلية بالإنترنت وتوجيه حزم البيانات بين الشبكات المختلفة"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما وظيفة المبدّل (Switch) داخل الشبكة المحلية؟",
+                options: [
+                    "ربط أجهزة الشبكة وتوجيه البيانات إلى الجهاز المقصود بكفاءة ضمن الشبكة المحلية",
+                    "مسح المستندات ضوئياً",
+                    "إصدار الأصوات التحذيرية",
+                    "توليد الكهرباء"
+                ],
+                answer: "ربط أجهزة الشبكة وتوجيه البيانات إلى الجهاز المقصود بكفاءة ضمن الشبكة المحلية"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما الفرق بين الاتصال السلكي والاتصال اللاسلكي في الشبكات؟",
+                options: [
+                    "السلكي يستخدم كوابل مثل Ethernet بينما اللاسلكي يستخدم موجات راديوية مثل Wi-Fi",
+                    "اللاسلكي يحتاج إلى كابل معدني طويل دائماً",
+                    "السلكي يعمل عبر الأقمار الصناعية فقط",
+                    "لا يوجد أي فرق بينهما"
+                ],
+                answer: "السلكي يستخدم كوابل مثل Ethernet بينما اللاسلكي يستخدم موجات راديوية مثل Wi-Fi"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما ميزة استخدام وسائط النقل السلكية مثل كوابل Ethernet؟",
+                options: [
+                    "استقرار عالٍ وموثوقية جيدة وسرعة ثابتة نسبياً مع تقليل التداخل اللاسلكي",
+                    "عدم الحاجة لأي منفذ أو كابل إطلاقاً",
+                    "العمل دون كهرباء في جميع الأجهزة",
+                    "زيادة التداخل الكهرومغناطيسي دائماً"
+                ],
+                answer: "استقرار عالٍ وموثوقية جيدة وسرعة ثابتة نسبياً مع تقليل التداخل اللاسلكي"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما المقصود ببروتوكول الشبكة؟",
+                options: [
+                    "مجموعة من القواعد والاتفاقيات المنظمة لتبادل البيانات بين الأجهزة عبر الشبكة",
+                    "غلاف بلاستيكي لحماية الكابل",
+                    "نوع من أنواع الطابعات",
+                    "بطارية احتياطية"
+                ],
+                answer: "مجموعة من القواعد والاتفاقيات المنظمة لتبادل البيانات بين الأجهزة عبر الشبكة"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما وظيفة عنوان بروتوكول الإنترنت (IP Address)؟",
+                options: [
+                    "تعريف الجهاز وتمييزه على الشبكة لتمكين إرسال البيانات واستقبالها إلى وجهتها الصحيحة",
+                    "تغيير لون خلفية سطح المكتب",
+                    "حذف سجل المتصفح تلقائياً",
+                    "زيادة سعة القرص الصلب"
+                ],
+                answer: "تعريف الجهاز وتمييزه على الشبكة لتمكين إرسال البيانات واستقبالها إلى وجهتها الصحيحة"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما المقصود بنظام أسماء النطاقات (DNS)؟",
+                options: [
+                    "ترجمة أسماء المواقع السهلة للبشر مثل example.com إلى عناوين IP رقمية تفهمها الشبكة",
+                    "تشفير لوحة المفاتيح",
+                    "تنظيف مروحة التبريد",
+                    "ضغط ملفات الفيديو"
+                ],
+                answer: "ترجمة أسماء المواقع السهلة للبشر مثل example.com إلى عناوين IP رقمية تفهمها الشبكة"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما المقصود بالإنترنت؟",
+                options: [
+                    "شبكة عالمية ضخمة تربط ملايين الشبكات والأجهزة حول العالم لتبادل المعلومات والخدمات",
+                    "برنامج واحد مثبت على جهاز واحد فقط",
+                    "قرص مدمج لتشغيل الموسيقى",
+                    "نوع من أنواع لوحات المفاتيح"
+                ],
+                answer: "شبكة عالمية ضخمة تربط ملايين الشبكات والأجهزة حول العالم لتبادل المعلومات والخدمات"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما الفرق العام بين الإنترنت والشبكة العنكبوتية العالمية (WWW)؟",
+                options: [
+                    "الإنترنت هو البنية الشبكية العالمية المترابطة بينما الويب نظام من صفحات ومواقع المعلومات المرتبطة عبر الإنترنت",
+                    "الويب هو كابل الشبكة والإنترنت هو الشاشة",
+                    "هما شيء واحد بلا أي اختلاف في المفهوم",
+                    "الإنترنت يعمل دون شبكة"
+                ],
+                answer: "الإنترنت هو البنية الشبكية العالمية المترابطة بينما الويب نظام من صفحات ومواقع المعلومات المرتبطة عبر الإنترنت"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما وظيفة متصفح الويب؟",
+                options: [
+                    "طلب وعرض صفحات ومحتوى الويب للمستخدم مثل النصوص والصور والوسائط",
+                    "تجميع المعالج على اللوحة الأم",
+                    "إدارة الجداول المالية فقط",
+                    "تقطيع الكوابل الشبكية"
+                ],
+                answer: "طلب وعرض صفحات ومحتوى الويب للمستخدم مثل النصوص والصور والوسائط"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما المقصود بالحوسبة السحابية؟",
+                options: [
+                    "تقديم خدمات الحوسبة والتخزين والبرمجيات عبر الإنترنت حسب الطلب دون الحاجة لتخزين كل شيء محلياً",
+                    "وضع جهاز الحاسوب فوق سطح المنزل",
+                    "التنبؤ بحالة الطقس فقط",
+                    "نسخ الملفات يدوياً على ورق"
+                ],
+                answer: "تقديم خدمات الحوسبة والتخزين والبرمجيات عبر الإنترنت حسب الطلب دون الحاجة لتخزين كل شيء محلياً"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "أي مما يلي يُعد من فوائد الحوسبة السحابية؟",
+                options: [
+                    "إمكانية الوصول إلى الملفات ومشاركتها من أجهزة متعددة عبر الإنترنت مع مرونة التخزين",
+                    "عدم إمكانية فتح الملفات من أي جهاز آخر مطلقاً",
+                    "فقدان الوصول للبيانات بمجرد تغيير الشاشة",
+                    "إلغاء الحاجة إلى اسم مستخدم أو صلاحيات"
+                ],
+                answer: "إمكانية الوصول إلى الملفات ومشاركتها من أجهزة متعددة عبر الإنترنت مع مرونة التخزين"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما المقصود بالتصيد الاحتيالي (Phishing) عبر الإنترنت؟",
+                options: [
+                    "محاولة خداع المستخدم عبر رسائل أو روابط مزيفة لانتزاع بياناته السرية ككلمات المرور",
+                    "تنظيم المجلدات في نظام التشغيل",
+                    "تسريع تحميل الصفحات عبر الذاكرة المؤقتة",
+                    "ضبط إعدادات اللغة العربية"
+                ],
+                answer: "محاولة خداع المستخدم عبر رسائل أو روابط مزيفة لانتزاع بياناته السرية ككلمات المرور"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "كيف نتحقق من أمان الاتصال بموقع ويب قبل إدخال بيانات مهمة؟",
+                options: [
+                    "التحقق من وجود اتصال مشفر HTTPS وعنوان الموقع الصحيح وتجنب الروابط المشبوهة",
+                    "الضغط على أي إعلان منبثق دون تدقيق",
+                    "نشر كلمة المرور في التعليقات العامة",
+                    "تجاهل تحذيرات المتصفح"
+                ],
+                answer: "التحقق من وجود اتصال مشفر HTTPS وعنوان الموقع الصحيح وتجنب الروابط المشبوهة"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما أهمية المصادقة الثنائية (2FA) لحماية الحسابات؟",
+                options: [
+                    "إضافة طبقة تحقق إضافية بجانب كلمة المرور لزيادة صعوبة اختراق الحساب",
+                    "حذف الحساب تلقائياً بعد تسجيل الدخول",
+                    "إلغاء كلمة المرور نهائياً",
+                    "إبطاء سرعة الإنترنت"
+                ],
+                answer: "إضافة طبقة تحقق إضافية بجانب كلمة المرور لزيادة صعوبة اختراق الحساب"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما المقصود بالمواطنة الرقمية الإيجابية؟",
+                options: [
+                    "التصرف بمسؤولية واحترام وأمان وأخلاقيات عند استخدام التكنولوجيا والتفاعل الرقمي مع الآخرين",
+                    "الإساءة للآخرين خلف شاشة مجهولة",
+                    "نسخ أعمال الآخرين ونسبتها للنفس دون إذن",
+                    "مشاركة معلومات الآخرين الخاصة دون موافقتهم"
+                ],
+                answer: "التصرف بمسؤولية واحترام وأمان وأخلاقيات عند استخدام التكنولوجيا والتفاعل الرقمي مع الآخرين"
+            },
+            {
+                unit: "الوحدة الثانية: شبكات الحاسوب",
+                q: "ما السلوك السليم عند استخدام شبكات Wi-Fi العامة المفتوحة؟",
+                options: [
+                    "تجنب إجراء المعاملات الحساسة غير المشفرة والحذر من الشبكات غير الموثوقة",
+                    "مشاركة كلمات المرور البنكية والخاصة بوضوح",
+                    "إيقاف جميع وسائل الحماية أثناء التصفح",
+                    "تحميل ملفات مجهولة المصدر وتنفيذها فوراً"
+                ],
+                answer: "تجنب إجراء المعاملات الحساسة غير المشفرة والحذر من الشبكات غير الموثوقة"
+            }
+        ];
+
+        // حالة الاختبار
+        let activeQuestions = [];
+        let userAnswers = [];
+        let currentIndex = 0;
+        let studentName = "";
+        let studentSection = "";
+        let timerInterval = null;
+        let elapsedSeconds = 0;
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        // بيانات آخر نتيجة جاهزة للإرسال
+        let lastResultPayload = null;
+
+        /**
+         * خلط مصفوفة عشوائياً باستخدام خوارزمية Fisher-Yates
+         */
+        function shuffleArray(arr) {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        /**
+         * مؤثرات صوتية هادئة عبر Web Audio API
+         */
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContextClass) return;
+                    audioCtx = new AudioContextClass();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(520, now);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'finish') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.setValueAtTime(554.37, now + 0.12);
+                    osc.frequency.setValueAtTime(659.25, now + 0.24);
+                    gain.gain.setValueAtTime(0.07, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+                    osc.start(now);
+                    osc.stop(now + 0.45);
+                }
+            } catch (_) {
+                // تجاهل أخطاء الصوت في المتصفحات المقيدة
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            if (icon) {
+                icon.className = soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+            }
+        }
+
+        /**
+         * بدء الاختبار وتجهيز الأسئلة والخيارات العشوائية
+         */
+        function startQuiz() {
+            const nameInput = document.getElementById('student-name');
+            const sectionSelect = document.getElementById('student-section');
+            const errorBox = document.getElementById('form-error');
+
+            const nameVal = (nameInput ? nameInput.value : '').trim();
+            const sectionVal = (sectionSelect ? sectionSelect.value : '').trim();
+
+            if (!nameVal || !sectionVal) {
+                if (errorBox) errorBox.classList.remove('hidden');
+                playSound('click');
+                return;
+            }
+
+            if (errorBox) errorBox.classList.add('hidden');
+            studentName = nameVal;
+            studentSection = sectionVal;
+
+            // تجهيز الأسئلة الأربعين مع خلط خيارات كل سؤال عشوائياً
+            activeQuestions = QUESTION_BANK.map((item, idx) => ({
+                id: idx + 1,
+                unit: item.unit,
+                q: item.q,
+                options: shuffleArray(item.options),
+                answer: item.answer
+            }));
+
+            userAnswers = new Array(activeQuestions.length).fill(null);
+            currentIndex = 0;
+            elapsedSeconds = 0;
+
+            const infoEl = document.getElementById('display-student-info');
+            if (infoEl) {
+                infoEl.textContent = `${studentName} • ${studentSection}`;
+            }
+
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('welcome-screen').classList.remove('flex');
+            const quizScreen = document.getElementById('quiz-screen');
+            quizScreen.classList.remove('hidden');
+            quizScreen.classList.add('flex');
+
+            startTimer();
+            renderQuestion();
+            playSound('click');
+        }
+
+        /**
+         * تشغيل عداد الوقت
+         */
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                elapsedSeconds++;
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
+            const secs = String(elapsedSeconds % 60).padStart(2, '0');
+            const el = document.getElementById('timer-display');
+            if (el) el.textContent = `${mins}:${secs}`;
+        }
+
+        /**
+         * عرض السؤال الحالي وخياراته دون إظهار صحة أو خطأ الإجابة أثناء الحل
+         */
+        function renderQuestion() {
+            const qObj = activeQuestions[currentIndex];
+            if (!qObj) return;
+
+            document.getElementById('q-number').textContent = String(currentIndex + 1);
+            document.getElementById('q-unit-badge').textContent = qObj.unit;
+            document.getElementById('question-text').textContent = qObj.q;
+
+            const progressPercent = ((currentIndex + 1) / activeQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            const letters = ['أ', 'ب', 'ج', 'د'];
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            qObj.options.forEach((optText, idx) => {
+                const isSelected = userAnswers[currentIndex] === optText;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `option-card w-full text-right p-3.5 sm:p-4 rounded-2xl flex items-center gap-3 cursor-pointer ${isSelected ? 'is-selected' : ''}`;
+                btn.onclick = () => selectOption(optText);
+
+                const letterSpan = document.createElement('span');
+                letterSpan.className = 'option-letter w-8 h-8 rounded-xl bg-[#F2EBD9] border border-[#D4C5AC] text-slate-800 font-black text-sm flex items-center justify-center shrink-0 transition';
+                letterSpan.textContent = letters[idx] || String(idx + 1);
+
+                const textSpan = document.createElement('span');
+                textSpan.className = 'text-sm sm:text-base font-bold text-slate-800 leading-snug';
+                textSpan.textContent = optText;
+
+                btn.appendChild(letterSpan);
+                btn.appendChild(textSpan);
+                container.appendChild(btn);
+            });
+
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const nextBtnText = document.getElementById('next-btn-text');
+
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = userAnswers[currentIndex] === null;
+            nextBtnText.textContent = (currentIndex === activeQuestions.length - 1) ? 'إنهاء الاختبار' : 'التالي';
+        }
+
+        /**
+         * تسجيل اختيار الطالب دون إظهار حكم صح أو خطأ
+         */
+        function selectOption(chosenText) {
+            userAnswers[currentIndex] = chosenText;
+            playSound('click');
+            renderQuestion();
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                playSound('click');
+                renderQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (userAnswers[currentIndex] === null) return;
+            playSound('click');
+
+            if (currentIndex < activeQuestions.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        /**
+         * احتساب النتيجة النهائية، عرض الشاشة النهائية، وإرسال النتيجة إلى Google Sheets
+         */
+        function finishQuiz() {
+            if (timerInterval) clearInterval(timerInterval);
+            playSound('finish');
+
+            let score = 0;
+            const wrongItems = [];
+
+            activeQuestions.forEach((qObj, i) => {
+                if (userAnswers[i] === qObj.answer) {
+                    score++;
+                } else {
+                    wrongItems.push(`س${qObj.id}`);
+                }
+            });
+
+            const total = activeQuestions.length;
+            const percentage = Math.round((score / total) * 100);
+
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('flex');
+
+            const resultScreen = document.getElementById('result-screen');
+            resultScreen.classList.remove('hidden');
+            resultScreen.classList.add('flex');
+
+            document.getElementById('result-student-name').textContent = studentName;
+            document.getElementById('result-student-section').textContent = `الشعبة: ${studentSection}`;
+            document.getElementById('final-score').textContent = String(score);
+            document.getElementById('final-percentage').textContent = `${percentage}%`;
+
+            let gradeLabel = "مقبول";
+            let msg = "أحسنت بإتمام الاختبار، واصل المراجعة لتعزيز إتقانك للمادة.";
+
+            if (percentage >= 90) {
+                gradeLabel = "ممتاز";
+                msg = "أداء متميز جداً! بارك الله في اجتهادك وتفوقك في مادة المهارات الرقمية.";
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+                }
+            } else if (percentage >= 80) {
+                gradeLabel = "جيد جداً";
+                msg = "نتيجة رائعة ومشرفة! استمر في المراجعة لتصل إلى التميز الكامل.";
+            } else if (percentage >= 65) {
+                gradeLabel = "جيد";
+                msg = "جهد طيب، يمكنك مراجعة الأسئلة التي أخطأت فيها لتثبيت المفاهيم بشكل أفضل.";
+            }
+
+            document.getElementById('grade-badge').textContent = `التقدير: ${gradeLabel}`;
+            document.getElementById('encouragement-msg').textContent = msg;
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ar-JO');
+            const timeStr = now.toLocaleTimeString('ar-JO');
+            const mins = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
+            const secs = String(elapsedSeconds % 60).padStart(2, '0');
+            const detailsStr = `المدة: ${mins}:${secs} | الأخطاء: ${wrongItems.length ? wrongItems.join(', ') : 'لا يوجد'}`;
+
+            lastResultPayload = {
+                date: dateStr,
+                time: timeStr,
+                name: studentName,
+                section: studentSection,
+                score: `${score} / ${total}`,
+                percentage: `${percentage}%`,
+                details: detailsStr
+            };
+
+            sendResultToGoogleSheets(lastResultPayload);
+        }
+
+        /**
+         * إرسال النتيجة إلى جدول Google Sheets عبر Google Apps Script
+         */
+        async function sendResultToGoogleSheets(payload) {
+            const scriptUrl = (GOOGLE_SCRIPT_URL || DEFAULT_SCRIPT_URL).trim();
+            const statusBox = document.getElementById('sheets-status-box');
+            const statusIcon = document.getElementById('sheets-status-icon');
+            const statusText = document.getElementById('sheets-status-text');
+            const retryBtn = document.getElementById('retry-send-btn');
+
+            if (retryBtn) retryBtn.classList.add('hidden');
+
+            statusBox.className = "w-full rounded-2xl p-3.5 border text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 bg-sky-50 border-sky-200 text-sky-800";
+            statusIcon.className = "fa-solid fa-spinner fa-spin text-base";
+            statusText.textContent = "جاري إرسال النتيجة تلقائياً إلى جدول Google Sheets...";
+
+            try {
+                await postPayloadToSheets(scriptUrl, payload);
+
+                statusBox.className = "w-full rounded-2xl p-3.5 border text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 bg-emerald-50 border-emerald-300 text-emerald-900";
+                statusIcon.className = "fa-solid fa-cloud-check text-emerald-600 text-lg";
+                statusText.textContent = "تم إرسال النتيجة بنجاح إلى جدول Google Sheets.";
+            } catch (error) {
+                console.error("Sheets error:", error);
+                statusBox.className = "w-full rounded-2xl p-3.5 border text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 bg-red-50 border-red-300 text-red-900";
+                statusIcon.className = "fa-solid fa-triangle-exclamation text-red-600 text-base";
+                statusText.textContent = "تعذر إرسال النتيجة تلقائياً. يمكنك إعادة المحاولة.";
+                if (retryBtn) retryBtn.classList.remove('hidden');
+            }
+        }
+
+        /**
+         * إرسال البيانات إلى Google Apps Script بطرق متوافقة مع e.parameter و e.postData.contents
+         */
+        async function postPayloadToSheets(url, payload) {
+            const formParams = new URLSearchParams();
+            Object.entries(payload).forEach(([key, val]) => {
+                formParams.append(key, String(val ?? ""));
+            });
+
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body: formParams.toString()
+                });
+            } catch (_) {
+                await fetch(url, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+            }
+        }
+
+        function retrySheetsSend() {
+            if (lastResultPayload) {
+                sendResultToGoogleSheets(lastResultPayload);
+            }
+        }
+
+        /**
+         * شاشة مراجعة الأسئلة والإجابات بعد إنهاء الاختبار
+         */
+        function openReviewScreen() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('flex');
+            const reviewScreen = document.getElementById('review-screen');
+            reviewScreen.classList.remove('hidden');
+            reviewScreen.classList.add('flex');
+            renderReviewList('all');
+        }
+
+        function backToResult() {
+            document.getElementById('review-screen').classList.add('hidden');
+            document.getElementById('review-screen').classList.remove('flex');
+            const resultScreen = document.getElementById('result-screen');
+            resultScreen.classList.remove('hidden');
+            resultScreen.classList.add('flex');
+        }
+
+        function renderReviewList(filterMode) {
+            const listEl = document.getElementById('review-list');
+            const btnAll = document.getElementById('filter-all');
+            const btnWrong = document.getElementById('filter-wrong');
+
+            if (filterMode === 'wrong') {
+                btnWrong.className = "text-xs font-extrabold px-2.5 py-1 rounded-lg bg-sky-600 text-white cursor-pointer";
+                btnAll.className = "text-xs font-extrabold px-2.5 py-1 rounded-lg bg-white text-slate-700 border border-[#D4C5AC] cursor-pointer";
+            } else {
+                btnAll.className = "text-xs font-extrabold px-2.5 py-1 rounded-lg bg-sky-600 text-white cursor-pointer";
+                btnWrong.className = "text-xs font-extrabold px-2.5 py-1 rounded-lg bg-white text-slate-700 border border-[#D4C5AC] cursor-pointer";
+            }
+
+            listEl.innerHTML = '';
+            let countShown = 0;
+
+            activeQuestions.forEach((qObj, idx) => {
+                const chosen = userAnswers[idx];
+                const isCorrect = chosen === qObj.answer;
+
+                if (filterMode === 'wrong' && isCorrect) return;
+                countShown++;
+
+                const card = document.createElement('div');
+                card.className = `p-3.5 rounded-2xl border ${isCorrect ? 'bg-emerald-50/70 border-emerald-200' : 'bg-red-50/70 border-red-200'} space-y-1.5`;
+
+                const header = document.createElement('div');
+                header.className = 'flex items-center justify-between text-xs font-black';
+                header.innerHTML = `<span class="text-slate-800">السؤال ${qObj.id} • ${qObj.unit}</span><span class="${isCorrect ? 'text-emerald-700' : 'text-red-700'}">${isCorrect ? 'إجابة صحيحة' : 'إجابة غير صحيحة'}</span>`;
+
+                const qTitle = document.createElement('p');
+                qTitle.className = 'text-xs sm:text-sm font-extrabold text-slate-900';
+                qTitle.textContent = qObj.q;
+
+                const chosenLine = document.createElement('p');
+                chosenLine.className = 'text-xs font-bold text-slate-700';
+                chosenLine.textContent = `إجابتك: ${chosen || 'لم يُجب'}`;
+
+                const correctLine = document.createElement('p');
+                correctLine.className = 'text-xs font-extrabold text-emerald-800';
+                correctLine.textContent = `الإجابة الصحيحة: ${qObj.answer}`;
+
+                card.appendChild(header);
+                card.appendChild(qTitle);
+                card.appendChild(chosenLine);
+                if (!isCorrect) card.appendChild(correctLine);
+
+                listEl.appendChild(card);
+            });
+
+            if (countShown === 0) {
+                listEl.innerHTML = '<div class="p-6 text-center text-sm font-extrabold text-emerald-800 bg-emerald-50 rounded-2xl border border-emerald-200">ممتاز! جميع إجاباتك صحيحة ولا توجد أخطاء.</div>';
+            }
+        }
+
+        /**
+         * نافذة إعدادات رابط Google Sheets
+         */
+        function openTeacherSettings() {
+            const modal = document.getElementById('settings-modal');
+            const input = document.getElementById('script-url-input');
+            const feedback = document.getElementById('settings-feedback');
+            if (feedback) feedback.classList.add('hidden');
+            if (input) input.value = GOOGLE_SCRIPT_URL || DEFAULT_SCRIPT_URL;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeTeacherSettings() {
+            const modal = document.getElementById('settings-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function saveTeacherSettings() {
+            const input = document.getElementById('script-url-input');
+            const feedback = document.getElementById('settings-feedback');
+            const val = (input ? input.value : '').trim();
+
+            if (!val) {
+                feedback.className = "text-xs font-bold p-2.5 rounded-xl bg-red-50 text-red-700 border border-red-200";
+                feedback.textContent = "يرجى إدخال رابط صحيح.";
+                return;
+            }
+
+            GOOGLE_SCRIPT_URL = val;
+            localStorage.setItem('aqaba_digit_script_url', val);
+            feedback.className = "text-xs font-bold p-2.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200";
+            feedback.textContent = "تم حفظ رابط Google Apps Script بنجاح.";
+            playSound('click');
+        }
+
+        async function testSheetsConnection() {
+            const urlVal = document.getElementById('script-url-input').value.trim();
+            const feedback = document.getElementById('settings-feedback');
+
+            if (!urlVal) {
+                feedback.className = "text-xs font-bold p-2.5 rounded-xl bg-red-50 text-red-700 border border-red-200";
+                feedback.textContent = "يرجى إدخال رابط Google Apps Script أولاً.";
+                return;
+            }
+
+            feedback.className = "text-xs font-bold p-2.5 rounded-xl bg-sky-50 text-sky-800 border border-sky-200";
+            feedback.textContent = "جاري إرسال بيانات تجريبية...";
+
+            const now = new Date();
+            const testPayload = {
+                date: now.toLocaleDateString('ar-JO'),
+                time: now.toLocaleTimeString('ar-JO'),
+                name: "طالب تجريبي",
+                section: "السابع (أ)",
+                score: "40 / 40",
+                percentage: "100%",
+                details: "اختبار اتصال تجريبي"
+            };
+
+            try {
+                await postPayloadToSheets(urlVal, testPayload);
+                feedback.className = "text-xs font-bold p-2.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200";
+                feedback.textContent = "تم إرسال البيانات التجريبية بنجاح.";
+                playSound('click');
+            } catch (err) {
+                feedback.className = "text-xs font-bold p-2.5 rounded-xl bg-red-50 text-red-700 border border-red-200";
+                feedback.textContent = "تعذر الإرسال التجريبي، يرجى التحقق من الرابط.";
+            }
+        }
+
+        /**
+         * خلفية Three.js ثلاثية الأبعاد
+         */
+        function initThreeBackground() {
+            try {
+                const canvas = document.getElementById('bg-canvas');
+                if (!canvas || typeof THREE === 'undefined') return;
+
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.z = 30;
+
+                const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+                scene.add(ambientLight);
+
+                const dirLight = new THREE.DirectionalLight(0xfffbeb, 0.9);
+                dirLight.position.set(15, 20, 25);
+                scene.add(dirLight);
+
+                const shapes = [];
+                const geometries = [
+                    new THREE.IcosahedronGeometry(1.1, 0),
+                    new THREE.OctahedronGeometry(1.0, 0),
+                    new THREE.TorusGeometry(0.9, 0.3, 10, 20)
+                ];
+                const materials = [
+                    new THREE.MeshPhongMaterial({ color: 0x0284c7, transparent: true, opacity: 0.25 }),
+                    new THREE.MeshPhongMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.28 }),
+                    new THREE.MeshPhongMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.24 })
+                ];
+
+                for (let i = 0; i < 18; i++) {
+                    const mesh = new THREE.Mesh(
+                        geometries[i % geometries.length],
+                        materials[i % materials.length]
+                    );
+                    mesh.position.set(
+                        (Math.random() - 0.5) * 44,
+                        (Math.random() - 0.5) * 28,
+                        (Math.random() - 0.5) * 18 - 4
+                    );
+                    mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+                    mesh.userData = {
+                        rotSpeedX: (Math.random() - 0.5) * 0.01,
+                        rotSpeedY: (Math.random() - 0.5) * 0.012,
+                        floatOffset: Math.random() * Math.PI * 2,
+                        baseY: mesh.position.y
+                    };
+                    scene.add(mesh);
+                    shapes.push(mesh);
+                }
+
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+
+                function animateBg() {
+                    requestAnimationFrame(animateBg);
+                    const t = performance.now() * 0.0015;
+                    shapes.forEach((s) => {
+                        s.rotation.x += s.userData.rotSpeedX;
+                        s.rotation.y += s.userData.rotSpeedY;
+                        s.position.y = s.userData.baseY + Math.sin(t + s.userData.floatOffset) * 0.9;
+                    });
+                    renderer.render(scene, camera);
+                }
+                animateBg();
+            } catch (_) {
+                // تجاهل في حال عدم دعم WebGL
+            }
+        }
+
+        /**
+         * إمالة ثلاثية الأبعاد تفاعلية لمجسم الحاسوب عند تحريك المؤشر
+         */
+        function init3DComputerTilt() {
+            const wrapper = document.getElementById('computer-3d');
+            if (!wrapper) return;
+
+            document.addEventListener('mousemove', (e) => {
+                if (window.innerWidth < 768) return;
+                const nx = (e.clientX / window.innerWidth) - 0.5;
+                const ny = (e.clientY / window.innerHeight) - 0.5;
+                const rotateY = nx * 6;
+                const rotateX = -ny * 4.5;
+                wrapper.style.transform = `rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
+            });
+
+            document.addEventListener('mouseleave', () => {
+                wrapper.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            });
+        }
+
+        window.onload = function () {
+            initThreeBackground();
+            init3DComputerTilt();
+        };
+    </script>
+</body>
+</html>
